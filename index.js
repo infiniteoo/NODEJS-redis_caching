@@ -19,7 +19,16 @@ async function getRepos(req, res, next) {
 
     const data = await response.json();
 
-    res.send(data);
+    const repos = data.public_repos;
+
+    // set response
+    function setResponse(username, repos) {
+      return `<h2>${username} has ${repos} Github repos </h2>`;
+    }
+    // set data to redis
+    client.setex(username, 3600, repos);
+
+    res.send(setResponse(username, repos));
   } catch (err) {
     console.error(err);
     res.status(500);
